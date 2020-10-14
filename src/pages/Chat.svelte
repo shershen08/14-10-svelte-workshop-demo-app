@@ -1,21 +1,33 @@
 <script>
-	import { onMount } from 'svelte';
+    import { onMount } from 'svelte';
+    import {loadPosts} from '../services/posts';
+    import posts, {clearList, addItem} from '../store/posts';
+
 	import MessagesList from '../components/MessagesList.svelte'
 	import MessagesForm from '../components/MessagesForm.svelte'
 
-    let messages = []
     
     function sendMessage({detail}){
 		console.log('sendMessage', detail.text)
     }
     
-    onMount(async () => {
-		const res = await fetch(`https://jsonplaceholder.typicode.com/posts?_limit=20`);
-		messages = await res.json();
-	})
+    onMount(() => {
+        loadPosts();
+    })
 
-
+    $: if(posts.length = 0 ) {
+        //isLoading
+    }
+    
+    // reactive on posts list
+    posts.subscribe(posts => {
+        console.log('posts', posts)
+    })
 
 </script>
-<MessagesList messages={messages}/>
+
+<button on:click={() => clearList()}> clearList </button>
+<button on:click={() => addItem('foo')}> addItem </button>
+
+<MessagesList messages={$posts}/>
 <MessagesForm on:send={sendMessage}/>
